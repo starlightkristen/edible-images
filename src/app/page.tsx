@@ -302,24 +302,50 @@ export default function Page() {
             {/* Step 3 */}
             {step===3 && (
               <div className="border rounded-2xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-medium">3. Add your artwork</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-medium">3. Layout & Add Your Artwork</h2>
                   {layout && (
                     <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-full">
                       Layout: <span className="font-medium text-gray-800">{layout.label}</span>
                     </div>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center gap-4">
+
+                {/* Layout Selection */}
+                <div className="mb-6">
+                  <h3 className="text-md font-medium mb-3">Choose Your Layout</h3>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {layoutOptions.map(lo => (
+                      <button key={lo.value} onClick={() => setLayout(lo)} className={`border rounded-lg p-3 text-left transition-all ${layout?.value === lo.value ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{lo.icon}</span>
+                          <span className="font-medium text-sm">{lo.label}</span>
+                        </div>
+                        <div className="text-xs text-gray-600">{lo.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Canvas Preview - Right after layout selection */}
+                <div className="mb-6">
+                  <h3 className="text-md font-medium mb-3">Live Preview</h3>
+                  <div className="text-sm text-gray-600 mb-3">This is exactly how your edible image will look when printed:</div>
+                  <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
+                </div>
+
+                {/* Artwork Mode Selection */}
+                <div className="flex flex-wrap items-center gap-4 mb-4">
                   <label className="flex items-center gap-2"><input type="radio" name="artmode" checked={!needsDesignHelp} onChange={()=>{ setNeedsDesignHelp(false); setDesignMode(null); }} /> I have finished images</label>
                   <label className="flex items-center gap-2"><input type="radio" name="artmode" checked={needsDesignHelp} onChange={()=> setNeedsDesignHelp(true)} /> I need design help</label>
                   <label className="ml-auto flex items-center gap-2 text-sm"><input type="checkbox" checked={printPreviewOn} onChange={e=>setPrintPreviewOn(e.target.checked)} /> Show realistic print preview</label>
                 </div>
 
                 {!needsDesignHelp && (
-                  <div className="mt-3">
+                  <div className="mb-4">
+                    <h3 className="text-md font-medium mb-3">Upload Your Images</h3>
                     <ImageUploadArea onFilesAdded={(files) => files.forEach(addUpload)} />
-                    <div className="text-xs text-gray-600 mt-2">Toggle "realistic preview" to simulate wafer vs frosting colors/contrast.</div>
+                    <div className="text-xs text-gray-600 mt-2">Drag & drop or click to upload. Toggle "realistic preview" to simulate wafer vs frosting colors/contrast.</div>
                   </div>
                 )}
 
@@ -363,9 +389,6 @@ export default function Page() {
                   </div>
                 )}
 
-                <div className="mt-4">
-                  <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
-                </div>
 
                 <div className="mt-4 flex flex-wrap gap-3 items-center">
                   <label className="flex items-center gap-2"><input type="checkbox" checked={rush} onChange={e=>setRush(e.target.checked)} /> Rush (+$15)</label>
@@ -541,17 +564,17 @@ function PreviewCanvas({ canvasRef, sheetKey, safeMarginIn, layout, items }:
   const s = SHEETS[sheetKey];
   const w = Math.round(s.inches.w * DPI), h = Math.round(s.inches.h * DPI);
 
-  // Responsive sizing - larger canvas that adapts to screen size
-  const containerWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth - 64, 800) : 800; // Up to 800px wide
-  const maxHeight = 500; // Taller for better visibility
+  // Use a larger, fixed size that works well on most screens
+  const containerWidth = 900; // Much larger base size
+  const maxHeight = 600; // Taller for better visibility
 
-  // Calculate scale to fit nicely within responsive container size
+  // Calculate scale to fit nicely within larger container size
   const scaleX = (containerWidth - 48) / w; // Account for padding
   const scaleY = maxHeight / h;
-  const scale = Math.min(scaleX, scaleY, 1.2); // Allow slight upscaling for better visibility
+  const scale = Math.min(scaleX, scaleY, 1.5); // Allow more upscaling for better visibility
 
   return (
-    <div className="border rounded-xl bg-slate-100 p-6 w-full mx-auto">
+    <div className="border rounded-xl bg-slate-100 p-6 w-full mx-auto" style={{ maxWidth: '1000px' }}>
       <div className="flex justify-center items-center" style={{ minHeight: `${Math.min(h * scale + 40, maxHeight + 40)}px` }}>
         <div className="inline-block" style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
           <canvas
