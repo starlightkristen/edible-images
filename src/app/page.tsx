@@ -230,11 +230,33 @@ export default function Page() {
             {step===2 && (
               <div className="border rounded-2xl p-4">
                 <h2 className="text-lg font-medium mb-2">2. Choose layout</h2>
-                <div className="grid sm:grid-cols-2 gap-3">
+                <div className="grid sm:grid-cols-2 gap-4">
                   {PRESETS.map((p, idx) => (
-                    <button key={idx} onClick={()=>setLayout(p)} className={`text-left border rounded-xl p-3 hover:shadow ${layout===p?'ring-2 ring-indigo-600':''}`} type="button">
-                      <div className="font-medium">{p.label}</div>
-                      <div className="text-xs text-gray-600">Auto-fills max capacity, centered within safe area.</div>
+                    <button
+                      key={idx}
+                      onClick={() => setLayout(p)}
+                      className={`text-left border-2 rounded-xl p-4 transition-all hover:shadow-md ${
+                        layout === p
+                          ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200'
+                          : 'border-gray-200 hover:border-indigo-300'
+                      }`}
+                      type="button"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex-shrink-0">
+                          {p.kind === 'grid' && p.shape === 'circle' && <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-xs font-bold">●●</div>}
+                          {p.kind === 'round_center' && <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 text-xs font-bold">⬤</div>}
+                          {p.kind === 'full_sheet' && <div className="w-8 h-8 bg-amber-100 rounded flex items-center justify-center text-amber-600 text-xs font-bold">▬</div>}
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{p.label}</div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {p.kind === 'grid' && `${p.sizeIn}" ${p.shape}s, auto-arranged`}
+                            {p.kind === 'round_center' && `${p.diamIn}" diameter, centered`}
+                            {p.kind === 'full_sheet' && 'Fits entire safe area'}
+                          </div>
+                        </div>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -260,8 +282,8 @@ export default function Page() {
 
                 {!needsDesignHelp && (
                   <div className="mt-3">
-                    <input type="file" accept="image/*,application/pdf" multiple onChange={e=>{ const files = Array.from(e.target.files||[]); files.forEach(addUpload); }} />
-                    <div className="text-xs text-gray-600 mt-2">Toggle “realistic preview” to simulate wafer vs frosting colors/contrast.</div>
+                    <ImageUploadArea onFilesAdded={(files) => files.forEach(addUpload)} />
+                    <div className="text-xs text-gray-600 mt-2">Toggle "realistic preview" to simulate wafer vs frosting colors/contrast.</div>
                   </div>
                 )}
 
@@ -475,11 +497,93 @@ function PreviewCanvas({ canvasRef, sheetKey, safeMarginIn, layout, items }:
   { canvasRef: React.RefObject<HTMLCanvasElement>; sheetKey: SheetKey; safeMarginIn?: number; layout?: any; items?: any[]; }) {
   const s = SHEETS[sheetKey];
   const w = Math.round(s.inches.w * DPI), h = Math.round(s.inches.h * DPI);
+
+  // Calculate responsive scale to fit nicely in container
+  const maxDisplayWidth = 400;
+  const maxDisplayHeight = 500;
+  const scaleX = maxDisplayWidth / w;
+  const scaleY = maxDisplayHeight / h;
+  const scale = Math.min(scaleX, scaleY, 1);
+
   return (
-    <div className="overflow-auto border rounded-xl bg-slate-100 p-3">
-      <div className="inline-block" style={{ transform: 'scale(0.5)', transformOrigin: 'top left' }}>
-        <canvas ref={canvasRef} width={w} height={h} className="bg-white shadow-sm" aria-label="Sheet preview canvas" style={{ outline: '4px solid #2446d6', boxShadow: '0 0 0 12px rgba(36,70,214,0.12) inset' }} />
+    <div className="flex justify-center border rounded-xl bg-slate-100 p-6">
+      <div className="inline-block" style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
+        <canvas
+          ref={canvasRef}
+          width={w}
+          height={h}
+          className="bg-white shadow-lg"
+          aria-label="Sheet preview canvas"
+          style={{
+            outline: '4px solid #2446d6',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(36,70,214,0.08) inset',
+            borderRadius: '8px'
+          }}
+        />
       </div>
+    </div>
+  );
+}
+
+function ImageUploadArea({ onFilesAdded }: { onFilesAdded: (files: File[]) => void }) {
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type === 'application/pdf');
+    if (files.length > 0) onFilesAdded(files);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) onFilesAdded(files);
+  };
+
+  return (
+    <div
+      className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
+        isDragging ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400'
+      }`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onClick={() => fileInputRef.current?.click()}
+    >
+      <div className="space-y-3">
+        <div className="text-4xl">📁</div>
+        <div className="text-lg font-medium text-gray-700">
+          {isDragging ? 'Drop your images here!' : 'Drop images here or click to browse'}
+        </div>
+        <div className="text-sm text-gray-500">
+          Supports JPG, PNG, GIF, SVG, PDF • Multiple files OK
+        </div>
+        <button
+          type="button"
+          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+        >
+          Choose Files
+        </button>
+      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,application/pdf"
+        multiple
+        onChange={handleFileChange}
+        className="hidden"
+      />
     </div>
   );
 }
