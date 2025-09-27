@@ -315,13 +315,21 @@ export default function Page() {
                 <div className="mb-6">
                   <h3 className="text-md font-medium mb-3">Choose Your Layout</h3>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {layoutOptions.map(lo => (
-                      <button key={lo.value} onClick={() => setLayout(lo)} className={`border rounded-lg p-3 text-left transition-all ${layout?.value === lo.value ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                    {PRESETS.map((p, idx) => (
+                      <button key={idx} onClick={() => setLayout(p)} className={`border rounded-lg p-3 text-left transition-all ${layout === p ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'}`}>
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-lg">{lo.icon}</span>
-                          <span className="font-medium text-sm">{lo.label}</span>
+                          <div className="flex-shrink-0">
+                            {p.kind === 'grid' && p.shape === 'circle' && <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-xs font-bold">●●</div>}
+                            {p.kind === 'round_center' && <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 text-xs font-bold">⬤</div>}
+                            {p.kind === 'full_sheet' && <div className="w-6 h-6 bg-amber-100 rounded flex items-center justify-center text-amber-600 text-xs font-bold">▬</div>}
+                          </div>
+                          <span className="font-medium text-sm">{p.label}</span>
                         </div>
-                        <div className="text-xs text-gray-600">{lo.desc}</div>
+                        <div className="text-xs text-gray-600">
+                          {p.kind === 'grid' && `${p.sizeIn}" ${p.shape}s, auto-arranged`}
+                          {p.kind === 'round_center' && `${p.diamIn}" diameter, centered`}
+                          {p.kind === 'full_sheet' && 'Fits entire safe area'}
+                        </div>
                       </button>
                     ))}
                   </div>
