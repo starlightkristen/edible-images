@@ -541,33 +541,18 @@ function PreviewCanvas({ canvasRef, sheetKey, safeMarginIn, layout, items }:
   const s = SHEETS[sheetKey];
   const w = Math.round(s.inches.w * DPI), h = Math.round(s.inches.h * DPI);
 
-  // Responsive scaling based on device size
-  const [containerSize, setContainerSize] = React.useState({ width: 400, height: 300 });
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  // Fixed, consistent sizing that matches other page components
+  const containerWidth = 600; // Match the main content width
+  const maxHeight = 400; // Reasonable height for all devices
 
-  React.useEffect(() => {
-    const updateSize = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const availableWidth = Math.min(rect.width - 32, window.innerWidth - 64); // padding
-        const availableHeight = Math.min(window.innerHeight * 0.4, 500); // max 40% of viewport
-        setContainerSize({ width: availableWidth, height: availableHeight });
-      }
-    };
-
-    updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-
-  // Calculate scale based on available space
-  const scaleX = containerSize.width / w;
-  const scaleY = containerSize.height / h;
-  const scale = Math.min(scaleX, scaleY, 0.8); // max 80% to ensure it fits nicely
+  // Calculate scale to fit nicely within consistent container size
+  const scaleX = (containerWidth - 48) / w; // Account for padding
+  const scaleY = maxHeight / h;
+  const scale = Math.min(scaleX, scaleY, 1); // Never scale up beyond 100%
 
   return (
-    <div ref={containerRef} className="border rounded-xl bg-slate-100 p-4 sm:p-6 overflow-hidden">
-      <div className="flex justify-center items-center min-h-[200px] sm:min-h-[300px]">
+    <div className="border rounded-xl bg-slate-100 p-6 w-full max-w-3xl mx-auto">
+      <div className="flex justify-center items-center" style={{ minHeight: `${Math.min(h * scale + 40, maxHeight)}px` }}>
         <div className="inline-block" style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
           <canvas
             ref={canvasRef}
