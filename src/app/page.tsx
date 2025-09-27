@@ -541,18 +541,18 @@ function PreviewCanvas({ canvasRef, sheetKey, safeMarginIn, layout, items }:
   const s = SHEETS[sheetKey];
   const w = Math.round(s.inches.w * DPI), h = Math.round(s.inches.h * DPI);
 
-  // Fixed, consistent sizing that matches other page components
-  const containerWidth = 600; // Match the main content width
-  const maxHeight = 400; // Reasonable height for all devices
+  // Responsive sizing - larger canvas that adapts to screen size
+  const containerWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth - 64, 800) : 800; // Up to 800px wide
+  const maxHeight = 500; // Taller for better visibility
 
-  // Calculate scale to fit nicely within consistent container size
+  // Calculate scale to fit nicely within responsive container size
   const scaleX = (containerWidth - 48) / w; // Account for padding
   const scaleY = maxHeight / h;
-  const scale = Math.min(scaleX, scaleY, 1); // Never scale up beyond 100%
+  const scale = Math.min(scaleX, scaleY, 1.2); // Allow slight upscaling for better visibility
 
   return (
-    <div className="border rounded-xl bg-slate-100 p-6 w-full max-w-3xl mx-auto">
-      <div className="flex justify-center items-center" style={{ minHeight: `${Math.min(h * scale + 40, maxHeight)}px` }}>
+    <div className="border rounded-xl bg-slate-100 p-6 w-full mx-auto">
+      <div className="flex justify-center items-center" style={{ minHeight: `${Math.min(h * scale + 40, maxHeight + 40)}px` }}>
         <div className="inline-block" style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
           <canvas
             ref={canvasRef}
