@@ -78,16 +78,10 @@ export async function POST(req: NextRequest) {
     const anyRush = lines.some(l => !!l.rush);
     const anyCutting = lines.some(l => !!l.cutting);
 
-    // Prepare minimal order fields to test
+    // Prepare minimal order fields to test - start with almost nothing
     const orderFields = {
-      // Start with only basic fields that are likely to exist
-      Status: 'NEW',
-      Name: order.customer?.name || '',
-      Email: order.customer?.email || '',
-      Phone: order.customer?.phone || '',
-      Total: order.totals?.grandTotal ?? 0,
-      Notes: order.customer?.notes || '',
-      Lines: JSON.stringify(lines),
+      // Only try the most basic field
+      Notes: order.customer?.notes || `Order from ${order.customer?.name || 'Unknown'} (${order.customer?.email || 'no-email'}) - Total: $${order.totals?.grandTotal ?? 0}`,
     };
 
     // Create order record
