@@ -78,10 +78,42 @@ export async function POST(req: NextRequest) {
     const anyRush = lines.some(l => !!l.rush);
     const anyCutting = lines.some(l => !!l.cutting);
 
-    // Prepare minimal order fields to test - start with almost nothing
+    // Prepare order fields - comprehensive order data in Notes field
     const orderFields = {
-      // Only try the most basic field
-      Notes: order.customer?.notes || `Order from ${order.customer?.name || 'Unknown'} (${order.customer?.email || 'no-email'}) - Total: $${order.totals?.grandTotal ?? 0}`,
+      // Put all order information in Notes field (most likely to exist)
+      Notes: [
+        `=== ORDER ${Date.now()} ===`,
+        `Status: NEW`,
+        `Customer: ${order.customer?.name || 'Unknown'}`,
+        `Email: ${order.customer?.email || 'no-email'}`,
+        `Phone: ${order.customer?.phone || 'N/A'}`,
+        `Delivery: ${order.customer?.pickup ? 'Pickup' : 'Shipping'}`,
+        order.customer?.address?.line1 ? `Address: ${order.customer.address.line1}, ${order.customer.address.city || ''} ${order.customer.address.state || ''} ${order.customer.address.zip || ''}` : '',
+        order.customer?.desiredDateTime ? `Desired Date/Time: ${order.customer.desiredDateTime}` : '',
+        ``,
+        `=== ORDER DETAILS ===`,
+        `Subtotal: $${order.totals?.subtotal ?? 0}`,
+        `Shipping: $${order.totals?.shipping ?? 0}`,
+        `Total: $${order.totals?.grandTotal ?? 0}`,
+        `Number of Sheets: ${numSheets}`,
+        `Rush Order: ${anyRush ? 'Yes (+$15)' : 'No'}`,
+        `Pre-cutting: ${anyCutting ? 'Yes (+$5)' : 'No'}`,
+        `Sheet Types: ${sheetTypes}`,
+        ``,
+        `=== DESIGN INFO ===`,
+        `Design Mode: ${order.design?.mode || 'None'}`,
+        order.design?.prompt ? `Design Prompt: ${order.design.prompt}` : '',
+        order.design?.assets?.length ? `Design Assets: ${order.design.assets.join(', ')}` : '',
+        ``,
+        `=== SHIPPING INFO ===`,
+        order.shipping?.shipmentId ? `Shipment ID: ${order.shipping.shipmentId}` : '',
+        order.shipping?.rateId ? `Rate ID: ${order.shipping.rateId}` : '',
+        ``,
+        `=== ORDER LINES (JSON) ===`,
+        JSON.stringify(lines, null, 2),
+        ``,
+        order.customer?.notes ? `=== CUSTOMER NOTES ===\n${order.customer.notes}` : ''
+      ].filter(Boolean).join('\n'),
     };
 
     // Create order record
