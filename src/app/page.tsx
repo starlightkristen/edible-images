@@ -546,7 +546,7 @@ export default function Page() {
           </aside>
         </div>
 
-        <footer className="text-center text-xs text-gray-600 mt-6">© {new Date().getFullYear()} Edible Images by Kristen — Greece, NY. Nationwide USPS shipping available. Personal-use only on licensed art. No refunds after proof approval.</footer>
+        <footer className="text-center text-xs text-gray-600 mt-6">© {new Date().getFullYear()} Edible Images by Kristen — Greece, NY. Nationwide USPS shipping available. Personal-use only on licensed art. No refunds after proof approval. | v2.1 Updated UX</footer>
       </div>
     </div>
   );
