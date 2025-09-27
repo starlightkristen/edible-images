@@ -311,7 +311,7 @@ export default function Page() {
                   )}
                 </div>
 
-                {/* Layout Selection */}
+                {/* Layout Selection - Updated UX Flow */}
                 <div className="mb-6">
                   <h3 className="text-md font-medium mb-3">Choose Your Layout</h3>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
