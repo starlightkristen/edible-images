@@ -415,7 +415,7 @@ export default function Page() {
                 <img src={line.previewDataUrl} alt="preview" className="w-full rounded" />
                 <div className="mt-2 text-sm">
                   <div className="font-medium">{SHEETS[line.sheetKey].label}</div>
-                  <div className="text-gray-600">{('label' in line.layout) ? line.layout.label : line.layout.kind}</div>
+                  <div className="text-gray-600">{('label' in line.layout) ? line.layout.label : (line.layout as any).kind}</div>
                 </div>
                 <div className="mt-2 flex items-center gap-2">
                   <label className="text-sm">Qty</label>
