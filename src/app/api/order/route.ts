@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     // Prepare order fields
     const orderFields = {
       Status: 'NEW',
-      CreatedAt: new Date().toISOString(),
+      // CreatedAt: new Date().toISOString(), // Temporarily remove to test field types
 
       // Customer block
       CustomerName: order.customer?.name || '',
