@@ -260,6 +260,22 @@ export default function Page() {
                     </button>
                   ))}
                 </div>
+
+                {layout && (
+                  <div className="mt-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium text-indigo-900">Selected:</span>
+                      <span className="text-indigo-700">{layout.label}</span>
+                      {layout.kind === 'grid' && (
+                        <span className="text-indigo-600">• {layout.sizeIn}" {layout.shape}s</span>
+                      )}
+                      {layout.kind === 'round_center' && (
+                        <span className="text-indigo-600">• {layout.diamIn}" diameter</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-4">
                   <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
                 </div>
@@ -273,7 +289,14 @@ export default function Page() {
             {/* Step 3 */}
             {step===3 && (
               <div className="border rounded-2xl p-4">
-                <h2 className="text-lg font-medium mb-2">3. Add your artwork</h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg font-medium">3. Add your artwork</h2>
+                  {layout && (
+                    <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-full">
+                      Layout: <span className="font-medium text-gray-800">{layout.label}</span>
+                    </div>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-4">
                   <label className="flex items-center gap-2"><input type="radio" name="artmode" checked={!needsDesignHelp} onChange={()=>{ setNeedsDesignHelp(false); setDesignMode(null); }} /> I have finished images</label>
                   <label className="flex items-center gap-2"><input type="radio" name="artmode" checked={needsDesignHelp} onChange={()=> setNeedsDesignHelp(true)} /> I need design help</label>
@@ -356,7 +379,14 @@ export default function Page() {
             {/* Step 4 */}
             {step===4 && (
               <div className="border rounded-2xl p-4">
-                <h2 className="text-lg font-medium mb-2">4. Review & approve (this is your proof)</h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg font-medium">4. Review & approve (this is your proof)</h2>
+                  {layout && (
+                    <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-full">
+                      Layout: <span className="font-medium text-gray-800">{layout.label}</span>
+                    </div>
+                  )}
+                </div>
                 <div className="text-sm text-gray-700 mb-2">I will print exactly what you see here within the safe margin box.</div>
                 <div className="flex items-center gap-3 mb-2 text-sm">
                   <label className="flex items-center gap-2"><input type="checkbox" checked={printPreviewOn} onChange={e=>setPrintPreviewOn(e.target.checked)} /> Show realistic print preview</label>
