@@ -78,56 +78,16 @@ export async function POST(req: NextRequest) {
     const anyRush = lines.some(l => !!l.rush);
     const anyCutting = lines.some(l => !!l.cutting);
 
-    // Prepare order fields
+    // Prepare minimal order fields to test
     const orderFields = {
+      // Start with only basic fields that are likely to exist
       Status: 'NEW',
-      // CreatedAt: new Date().toISOString(), // Temporarily remove to test field types
-
-      // Customer block
-      CustomerName: order.customer?.name || '',
+      Name: order.customer?.name || '',
       Email: order.customer?.email || '',
       Phone: order.customer?.phone || '',
-      DeliveryMethod: order.customer?.pickup ? 'Pickup' : 'Shipping',
-      PickupLocation: order.customer?.pickup ? (order.customer?.pickupLocation || 'Greece, NY') : '',
-      AddressLine1: order.customer?.address?.line1 || '',
-      AddressLine2: order.customer?.address?.line2 || '',
-      City: order.customer?.address?.city || '',
-      State: order.customer?.address?.state || '',
-      Zip: order.customer?.address?.zip || '',
-      DesiredDateTime: order.customer?.desiredDateTime || '',
-      Notes: order.customer?.notes || '',
-      ...(customerId && { Customer: [customerId] }),
-
-      // Proof defaults (unchecked)
-      ProofApproved: false,
-      ApprovedAt: '',
-      ApprovedIP: '',
-      ProofThumb: '',
-
-      // Money
-      Subtotal: order.totals?.subtotal ?? 0,
-      Shipping: order.totals?.shipping ?? 0,
       Total: order.totals?.grandTotal ?? 0,
-
-      // Analytics
-      NumSheets: numSheets,
-      AnyRush: anyRush,
-      AnyCutting: anyCutting,
-      SheetTypes: sheetTypes,
-
-      // Design meta
-      DesignMode: order.design?.mode || 'None',
-      AIIncludedRuns: order.design?.aiIncludedRuns ?? 0,
-      AIRunsUsed: order.design?.aiRunsUsed ?? 0,
-      DesignPrompt: order.design?.prompt || '',
-      DesignAssets: (order.design?.assets || []).join(', '),
-
-      // Shipping IDs from UI
-      ShipmentId: order.shipping?.shipmentId || '',
-      RateId: order.shipping?.rateId || '',
-
-      // Lines data
-      LinesJSON: JSON.stringify(lines),
+      Notes: order.customer?.notes || '',
+      Lines: JSON.stringify(lines),
     };
 
     // Create order record
