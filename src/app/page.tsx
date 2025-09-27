@@ -229,57 +229,70 @@ export default function Page() {
             {/* Step 2 */}
             {step===2 && (
               <div className="border rounded-2xl p-4">
-                <h2 className="text-lg font-medium mb-2">2. Choose layout</h2>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {PRESETS.map((p, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setLayout(p)}
-                      className={`text-left border-2 rounded-xl p-4 transition-all hover:shadow-md ${
-                        layout === p
-                          ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200'
-                          : 'border-gray-200 hover:border-indigo-300'
-                      }`}
-                      type="button"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0">
-                          {p.kind === 'grid' && p.shape === 'circle' && <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-xs font-bold">●●</div>}
-                          {p.kind === 'round_center' && <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 text-xs font-bold">⬤</div>}
-                          {p.kind === 'full_sheet' && <div className="w-8 h-8 bg-amber-100 rounded flex items-center justify-center text-amber-600 text-xs font-bold">▬</div>}
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-medium text-gray-900">{p.label}</div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            {p.kind === 'grid' && `${p.sizeIn}" ${p.shape}s, auto-arranged`}
-                            {p.kind === 'round_center' && `${p.diamIn}" diameter, centered`}
-                            {p.kind === 'full_sheet' && 'Fits entire safe area'}
+                <h2 className="text-lg font-medium mb-4">2. Choose layout</h2>
+
+                {/* Mobile-first layout with preview on top */}
+                <div className="space-y-4">
+                  {/* Preview Section - Shows immediately on mobile */}
+                  <div className="lg:hidden">
+                    <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
+                  </div>
+
+                  {/* Layout Selection */}
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {PRESETS.map((p, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setLayout(p)}
+                        className={`text-left border-2 rounded-xl p-4 transition-all hover:shadow-md ${
+                          layout === p
+                            ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200'
+                            : 'border-gray-200 hover:border-indigo-300'
+                        }`}
+                        type="button"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex-shrink-0">
+                            {p.kind === 'grid' && p.shape === 'circle' && <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-xs font-bold">●●</div>}
+                            {p.kind === 'round_center' && <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 text-xs font-bold">⬤</div>}
+                            {p.kind === 'full_sheet' && <div className="w-8 h-8 bg-amber-100 rounded flex items-center justify-center text-amber-600 text-xs font-bold">▬</div>}
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-900">{p.label}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {p.kind === 'grid' && `${p.sizeIn}" ${p.shape}s, auto-arranged`}
+                              {p.kind === 'round_center' && `${p.diamIn}" diameter, centered`}
+                              {p.kind === 'full_sheet' && 'Fits entire safe area'}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-                {layout && (
-                  <div className="mt-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium text-indigo-900">Selected:</span>
-                      <span className="text-indigo-700">{layout.label}</span>
-                      {layout.kind === 'grid' && (
-                        <span className="text-indigo-600">• {layout.sizeIn}" {layout.shape}s</span>
-                      )}
-                      {layout.kind === 'round_center' && (
-                        <span className="text-indigo-600">• {layout.diamIn}" diameter</span>
-                      )}
-                    </div>
+                      </button>
+                    ))}
                   </div>
-                )}
 
-                <div className="mt-4">
-                  <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
+                  {/* Selection Confirmation */}
+                  {layout && (
+                    <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium text-indigo-900">Selected:</span>
+                        <span className="text-indigo-700">{layout.label}</span>
+                        {layout.kind === 'grid' && (
+                          <span className="text-indigo-600">• {layout.sizeIn}" {layout.shape}s</span>
+                        )}
+                        {layout.kind === 'round_center' && (
+                          <span className="text-indigo-600">• {layout.diamIn}" diameter</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Preview for desktop (hidden on mobile) */}
+                  <div className="hidden lg:block">
+                    <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
+                  </div>
                 </div>
-                <div className="mt-4 flex justify-between items-center">
+
+                <div className="mt-6 flex justify-between items-center">
                   <button onClick={()=>setStep(1)} className="px-3 py-2 rounded-lg border" type="button">Back</button>
                   <button disabled={!canNextFrom2} onClick={()=>setStep(3)} className="px-4 py-2 rounded-lg border bg-indigo-600 text-white disabled:opacity-50" type="button">Next</button>
                 </div>
@@ -528,28 +541,47 @@ function PreviewCanvas({ canvasRef, sheetKey, safeMarginIn, layout, items }:
   const s = SHEETS[sheetKey];
   const w = Math.round(s.inches.w * DPI), h = Math.round(s.inches.h * DPI);
 
-  // Calculate responsive scale to fit nicely in container
-  const maxDisplayWidth = 400;
-  const maxDisplayHeight = 500;
-  const scaleX = maxDisplayWidth / w;
-  const scaleY = maxDisplayHeight / h;
-  const scale = Math.min(scaleX, scaleY, 1);
+  // Responsive scaling based on device size
+  const [containerSize, setContainerSize] = React.useState({ width: 400, height: 300 });
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const availableWidth = Math.min(rect.width - 32, window.innerWidth - 64); // padding
+        const availableHeight = Math.min(window.innerHeight * 0.4, 500); // max 40% of viewport
+        setContainerSize({ width: availableWidth, height: availableHeight });
+      }
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  // Calculate scale based on available space
+  const scaleX = containerSize.width / w;
+  const scaleY = containerSize.height / h;
+  const scale = Math.min(scaleX, scaleY, 0.8); // max 80% to ensure it fits nicely
 
   return (
-    <div className="flex justify-center border rounded-xl bg-slate-100 p-6">
-      <div className="inline-block" style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
-        <canvas
-          ref={canvasRef}
-          width={w}
-          height={h}
-          className="bg-white shadow-lg"
-          aria-label="Sheet preview canvas"
-          style={{
-            outline: '4px solid #2446d6',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15), 0 0 0 8px rgba(36,70,214,0.08) inset',
-            borderRadius: '8px'
-          }}
-        />
+    <div ref={containerRef} className="border rounded-xl bg-slate-100 p-4 sm:p-6 overflow-hidden">
+      <div className="flex justify-center items-center min-h-[200px] sm:min-h-[300px]">
+        <div className="inline-block" style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
+          <canvas
+            ref={canvasRef}
+            width={w}
+            height={h}
+            className="bg-white shadow-lg"
+            aria-label="Sheet preview canvas"
+            style={{
+              outline: '3px solid #2446d6',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15), 0 0 0 6px rgba(36,70,214,0.08) inset',
+              borderRadius: '6px'
+            }}
+          />
+        </div>
       </div>
     </div>
   );
