@@ -38,33 +38,37 @@ export async function POST(req: NextRequest) {
 
     // Check if Render service is configured
     const renderUrl = process.env.RENDER_SHIP_URL;
-    const renderBearer = process.env.RENDER_BEARER;
 
-    if (renderUrl && renderBearer && renderUrl !== 'https://your-render-service.onrender.com') {
-      // Proxy to Render service
-      try {
-        const response = await fetch(`${renderUrl}/rate`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${renderBearer}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(rateRequest),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          return NextResponse.json(data, { status: response.status });
+    if (renderUrl && renderUrl !== 'https://your-render-service.onrender.com') {
+      // Transform request to match your service's format
+      const shipRequest = {
+        to: {
+          name: rateRequest.to.name,
+          street1: rateRequest.to.street1,
+          city: rateRequest.to.city,
+          state: rateRequest.to.state,
+          zip: rateRequest.to.zip,
+          email: rateRequest.to.email
+        },
+        parcel: {
+          length: rateRequest.parcel.length,
+          width: rateRequest.parcel.width,
+          height: rateRequest.parcel.height,
+          weight_oz: rateRequest.parcel.weight_oz
+        },
+        reference: `estimate-${Date.now()}`,
+        options: {
+          signature: null,
+          perishable: false,
+          delivery_confirmation: null
         }
+      };
 
-        return NextResponse.json(data, {
-          headers: {
-            'X-RateLimit-Limit': '30',
-            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
-          }
-        });
+      try {
+        // Note: Your service creates actual shipping labels, not just estimates
+        // For rate estimates, we should use mock data to avoid creating real labels
+        console.log('Rate estimate requested - using mock data to avoid creating actual shipping labels');
+        // Fall through to mock response
       } catch (error) {
         console.error('Render service error:', error);
         // Fall through to mock response
