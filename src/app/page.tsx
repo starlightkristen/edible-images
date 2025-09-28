@@ -335,18 +335,18 @@ export default function Page() {
                   </div>
                 </div>
 
-                {/* Canvas Preview - Right after layout selection */}
-                <div className="mb-6">
-                  <h3 className="text-md font-medium mb-3">Live Preview</h3>
-                  <div className="text-sm text-gray-600 mb-3">This is exactly how your edible image will look when printed:</div>
-                  <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
-                </div>
-
-                {/* Artwork Mode Selection */}
+                {/* Artwork Mode Selection - Move up */}
                 <div className="flex flex-wrap items-center gap-4 mb-4">
                   <label className="flex items-center gap-2"><input type="radio" name="artmode" checked={!needsDesignHelp} onChange={()=>{ setNeedsDesignHelp(false); setDesignMode(null); }} /> I have finished images</label>
                   <label className="flex items-center gap-2"><input type="radio" name="artmode" checked={needsDesignHelp} onChange={()=> setNeedsDesignHelp(true)} /> I need design help</label>
                   <label className="ml-auto flex items-center gap-2 text-sm"><input type="checkbox" checked={printPreviewOn} onChange={e=>setPrintPreviewOn(e.target.checked)} /> Show realistic print preview</label>
+                </div>
+
+                {/* LARGE PROMINENT Canvas Preview */}
+                <div className="mb-6 bg-white border-2 border-indigo-200 rounded-xl p-4">
+                  <h3 className="text-lg font-semibold mb-2 text-indigo-900">🎯 Live Preview</h3>
+                  <div className="text-sm text-gray-600 mb-3">This is exactly how your edible image will print:</div>
+                  <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
                 </div>
 
                 {!needsDesignHelp && (
@@ -572,17 +572,17 @@ function PreviewCanvas({ canvasRef, sheetKey, safeMarginIn, layout, items }:
   const s = SHEETS[sheetKey];
   const w = Math.round(s.inches.w * DPI), h = Math.round(s.inches.h * DPI);
 
-  // Use a larger, fixed size that works well on most screens
-  const containerWidth = 900; // Much larger base size
-  const maxHeight = 600; // Taller for better visibility
+  // Extra large canvas for maximum visibility
+  const containerWidth = 1000; // Even larger base size
+  const maxHeight = 700; // Much taller for excellent visibility
 
-  // Calculate scale to fit nicely within larger container size
+  // Calculate scale to fit nicely within extra large container size
   const scaleX = (containerWidth - 48) / w; // Account for padding
   const scaleY = maxHeight / h;
-  const scale = Math.min(scaleX, scaleY, 1.5); // Allow more upscaling for better visibility
+  const scale = Math.min(scaleX, scaleY, 2.0); // Allow significant upscaling for maximum visibility
 
   return (
-    <div className="border rounded-xl bg-slate-100 p-6 w-full mx-auto" style={{ maxWidth: '1000px' }}>
+    <div className="border rounded-xl bg-slate-100 p-6 w-full mx-auto shadow-lg" style={{ maxWidth: '1100px' }}>
       <div className="flex justify-center items-center" style={{ minHeight: `${Math.min(h * scale + 40, maxHeight + 40)}px` }}>
         <div className="inline-block" style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
           <canvas
