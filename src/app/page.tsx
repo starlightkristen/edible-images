@@ -344,7 +344,7 @@ export default function Page() {
 
                 {/* LARGE PROMINENT Canvas Preview */}
                 <div className="mb-6 bg-white border-2 border-indigo-200 rounded-xl p-4">
-                  <h3 className="text-lg font-semibold mb-2 text-indigo-900">🎯 Live Preview</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-indigo-900">🎯 HUGE CANVAS PREVIEW - TESTING 123</h3>
                   <div className="text-sm text-gray-600 mb-3">This is exactly how your edible image will print:</div>
                   <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
                 </div>
