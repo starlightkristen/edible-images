@@ -212,7 +212,7 @@ export default function Page() {
             {/* Step 1 */}
             {step===1 && (
               <div className="border rounded-2xl p-4">
-                <h2 className="text-lg font-medium mb-2">1. Choose sheet type</h2>
+                <h2 className="text-lg font-medium mb-2">1. Choose sheet type - CHANGES ARE WORKING! 🎉</h2>
                 <div className="flex flex-wrap gap-3 items-center">
                   <select className="border rounded px-3 py-2" value={sheetKey} onChange={e=>setSheetKey(e.target.value as SheetKey)}>
                     {Object.entries(SHEETS).map(([k,v])=> <option key={k} value={k}>{v.label}</option>)}
@@ -233,8 +233,10 @@ export default function Page() {
 
                 {/* Mobile-first layout with preview on top */}
                 <div className="space-y-4">
-                  {/* Preview Section - Shows immediately on mobile */}
-                  <div className="lg:hidden">
+                  {/* LARGE Preview Section - Shows immediately on mobile */}
+                  <div className="lg:hidden mb-6 bg-white border-2 border-indigo-200 rounded-xl p-4">
+                    <h3 className="text-lg font-semibold mb-2 text-indigo-900">🎯 Live Preview</h3>
+                    <div className="text-sm text-gray-600 mb-3">Choose a layout below to see it here:</div>
                     <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
                   </div>
 
@@ -286,8 +288,10 @@ export default function Page() {
                     </div>
                   )}
 
-                  {/* Preview for desktop (hidden on mobile) */}
-                  <div className="hidden lg:block">
+                  {/* LARGE Preview for desktop (hidden on mobile) */}
+                  <div className="hidden lg:block mb-6 bg-white border-2 border-indigo-200 rounded-xl p-4">
+                    <h3 className="text-lg font-semibold mb-2 text-indigo-900">🎯 Live Preview</h3>
+                    <div className="text-sm text-gray-600 mb-3">Your selected layout preview:</div>
                     <PreviewCanvas canvasRef={canvasRef} sheetKey={sheetKey} safeMarginIn={safeMarginIn} layout={layout} items={items} />
                   </div>
                 </div>
